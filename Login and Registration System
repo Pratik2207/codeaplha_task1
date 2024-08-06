@@ -1,0 +1,93 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <unordered_map>
+
+using namespace std;
+
+// Function prototypes
+void registerUser();
+bool loginUser();
+void saveCredentials(const string& username, const string& password);
+bool checkCredentials(const string& username, const string& password);
+
+int main() {
+    int choice;
+
+    while (true) {
+        cout << "1. Register\n2. Login\n3. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+        
+        if (choice == 1) {
+            registerUser();
+        } else if (choice == 2) {
+            if (loginUser()) {
+                cout << "Login successful!" << endl;
+            } else {
+                cout << "Invalid username or password." << endl;
+            }
+        } else if (choice == 3) {
+            break;
+        } else {
+            cout << "Invalid choice. Please try again." << endl;
+        }
+    }
+
+    return 0;
+}
+
+void registerUser() {
+    string username, password;
+    
+    cout << "Enter username: ";
+    cin >> username;
+    cout << "Enter password: ";
+    cin >> password;
+
+    // Save the credentials to a file
+    saveCredentials(username, password);
+
+    cout << "Registration successful!" << endl;
+}
+
+bool loginUser() {
+    string username, password;
+    
+    cout << "Enter username: ";
+    cin >> username;
+    cout << "Enter password: ";
+    cin >> password;
+
+    // Check the credentials
+    return checkCredentials(username, password);
+}
+
+void saveCredentials(const string& username, const string& password) {
+    ofstream outFile("database.txt", ios::app);
+    if (outFile.is_open()) {
+        outFile << username << " " << password << endl;
+        outFile.close();
+    } else {
+        cout << "Error opening file for writing." << endl;
+    }
+}
+
+bool checkCredentials(const string& username, const string& password) {
+    ifstream inFile("database.txt");
+    string storedUsername, storedPassword;
+
+    if (inFile.is_open()) {
+        while (inFile >> storedUsername >> storedPassword) {
+            if (storedUsername == username && storedPassword == password) {
+                inFile.close();
+                return true;
+            }
+        }
+        inFile.close();
+    } else {
+        cout << "Error opening file for reading." << endl;
+    }
+
+    return false;
+}
